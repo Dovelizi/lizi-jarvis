@@ -1,0 +1,1749 @@
+/* ════════════════════════════════════════════════════════════════
+   Claudio · Nothing Design Components
+   严格遵循 references/components.md
+   核心：subtract / spacing 取代 cards / 三层视觉层级 / 一处惊喜
+   ════════════════════════════════════════════════════════════════ */
+
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1); }
+}
+
+/* ───── 修正 #app 布局：让 shell 正确撑满 ───── */
+#app { padding: 0; }  /* 内部 shell 自己处理 padding */
+#app [data-region="shell"] { flex: 1; display: flex; flex-direction: column; }
+#app [data-region="content"] { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+/* ───── HEADER ───── */
+.claudio-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.claudio-header__brand { display: flex; align-items: center; gap: var(--space-sm); }
+.claudio-avatar {
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border-visible);
+  background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-primary);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  cursor: pointer;
+  transition: border-color .2s var(--ease-out);
+}
+.claudio-avatar:hover { border-color: var(--text-primary); }
+.claudio-header__name {
+  font-family: var(--font-mono);
+  font-size: var(--label); letter-spacing: 0.12em;
+  color: var(--text-display); font-weight: 700;
+  text-transform: uppercase;
+}
+.claudio-header__nav { display: flex; align-items: center; gap: var(--space-md); }
+
+.claudio-btn {
+  background: transparent; border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+  transition: color .2s var(--ease-out);
+}
+.claudio-btn:hover { color: var(--text-display); }
+
+.claudio-theme-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border-visible);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.claudio-theme-toggle button {
+  background: transparent; border: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 4px var(--space-sm);
+  cursor: pointer;
+  transition: all .2s var(--ease-out);
+  text-transform: uppercase;
+}
+.claudio-theme-toggle button.is-active {
+  background: var(--text-display);
+  color: var(--black);
+}
+
+/* ───── LED CLOCK · preview 风卡片化 + 橙色指示点 + LOCAL TIME label ───── */
+.claudio-clock {
+  display: flex; flex-direction: column;
+  justify-content: space-between;  /* 撑满高度，时间居中、日期靠下 */
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-visible);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  height: 100%;
+  min-height: 0;
+}
+.claudio-clock__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+.claudio-clock__time {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-display);
+  letter-spacing: -0.02em;
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+}
+.claudio-clock__dot {
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: var(--accent-orange);
+  flex-shrink: 0;
+  animation: breathe 2s var(--ease-out) infinite;
+}
+.claudio-clock__colon {
+  font-family: var(--font-display);
+  animation: blink 1s steps(2, end) infinite;
+  font-style: normal;
+}
+.claudio-clock__date {
+  display: flex; flex-direction: column; gap: 2px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-display);
+}
+.claudio-clock__date-line2 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-disabled);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+/* 旧的 onair 独立区域在 preview 风里去掉，改为时钟集成显示 */
+.claudio-clock__onair { display: none; }
+
+/* 通用 dot（LIVE brand / footer status 用） */
+.claudio-onair__dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: breathe 2s var(--ease-out) infinite;
+}
+
+/* ───── LIVE PANEL · 卡片化 ───── */
+.claudio-live {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--border-visible);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: var(--space-md);
+  min-height: 200px;
+  flex: 1;
+}
+.claudio-live__header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--space-sm);
+}
+.claudio-live__brand {
+  display: flex; align-items: center; gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-display);
+}
+.claudio-badge--live {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.claudio-live__status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--space-xs) 0 var(--space-md);
+}
+.claudio-live__list {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column; gap: var(--space-md);
+}
+.claudio-live__empty {
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-align: center; padding: var(--space-3xl) 0;
+  text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CHAT · Telegram 风气泡聊天（v2 · 优化版）
+   设计要点：
+   - 时间戳放气泡外（不挤压气泡内文字）
+   - 短消息气泡按内容自适应（不再强制宽度）
+   - 同组消息合并：仅组末显示头像+时间+name
+   - 推荐歌曲卡片：独立浅色块、宽间距、可点击
+   ════════════════════════════════════════════════════════════════ */
+.chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  margin-bottom: 1px;
+  animation: fadeIn .25s var(--ease-out);
+}
+.chat-row.is-last { margin-bottom: var(--space-md); }
+.chat-row--bot   { justify-content: flex-start; }
+.chat-row--user  { justify-content: flex-end; }
+
+/* 气泡列：垂直堆叠（气泡 + 时间 + meta），方便统一对齐 */
+.chat-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: calc(100% - 40px);  /* 留头像 32 + gap 8 */
+}
+.chat-row--user .chat-col { align-items: flex-end; }
+.chat-row--bot  .chat-col { align-items: flex-start; }
+
+/* 头像：圆形，仅在组末出现 */
+.chat-avatar {
+  width: 30px; height: 30px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--border-visible);
+  background: var(--surface);
+  color: var(--text-display);
+  user-select: none;
+}
+.chat-avatar:empty { border-color: transparent; background: transparent; }
+.chat-avatar--user { background: var(--accent-orange); color: var(--black); border-color: transparent; }
+
+/* 气泡通用 */
+.chat-bubble {
+  position: relative;
+  width: fit-content;       /* 按内容自适应 */
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.chat-bubble__text {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: inherit;
+}
+
+/* bot 气泡：左下角小圆 */
+.chat-bubble--bot {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+.chat-row--bot.is-cont .chat-bubble--bot {
+  border-bottom-left-radius: 16px;
+  border-top-left-radius: 4px;   /* 同组连续：上下衔接更紧 */
+}
+
+/* user 气泡：右下角小圆，accent-orange */
+.chat-bubble--user {
+  background: var(--accent-orange);
+  color: var(--black);
+  border-bottom-right-radius: 4px;
+}
+.chat-row--user.is-cont .chat-bubble--user {
+  border-bottom-right-radius: 16px;
+  border-top-right-radius: 4px;
+}
+
+/* 气泡内顶部 CLAUDIO DJ 名牌（仅 bot 组首条显示） */
+.chat-bubble__name {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  color: var(--accent-orange);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.chat-bubble__role {
+  color: var(--text-disabled);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+}
+
+/* 气泡外底部时间戳（组末才显示） */
+.chat-time-footer {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-disabled);
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  padding: 0 6px;
+  line-height: 1;
+}
+.chat-time-footer--inline { margin: 0; }
+
+/* bot 气泡外的 meta 行（重播 + 时间） */
+.chat-bubble-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: 4px;
+  padding: 0 6px;
+}
+.chat-bubble__replay {
+  background: transparent; border: 0;
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  transition: color .2s var(--ease-out);
+}
+.chat-bubble__replay:hover { color: var(--text-display); }
+
+/* 气泡内歌曲推荐 */
+.chat-suggest {
+  list-style: none;
+  margin: 8px -2px 0;       /* 微负边距 → 视觉上更贴气泡边缘 */
+  padding: 0;
+  display: flex; flex-direction: column;
+  gap: 4px;
+}
+.chat-suggest__item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background .2s var(--ease-out);
+}
+.chat-suggest__item:hover { background: rgba(255,255,255,0.10); }
+.chat-suggest__item.is-pick {
+  background: rgba(255,107,26,0.10);
+  border-left: 2px solid var(--accent-orange);
+  padding-left: 8px;
+}
+.chat-suggest__play {
+  width: 28px; height: 28px;
+  background: rgba(255,107,26,0.15);
+  border: 0;
+  color: var(--accent-orange);
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s var(--ease-out);
+}
+.chat-suggest__item:hover .chat-suggest__play {
+  background: var(--accent-orange);
+  color: var(--black);
+}
+.chat-suggest__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.chat-suggest__name {
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--text-primary); font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.chat-suggest__artist {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-secondary); letter-spacing: 0.05em;
+  text-transform: uppercase;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* system 居中提示 */
+.chat-system {
+  text-align: center;
+  margin: var(--space-sm) 0;
+  animation: fadeIn .25s var(--ease-out);
+}
+.chat-system__text {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-disabled);
+  letter-spacing: 0.05em;
+}
+
+/* 流式"正在思考"三点动画 */
+.chat-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+}
+.chat-thinking-dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--accent-orange);
+  opacity: 0.3;
+  animation: thinking-pulse 1.2s ease-in-out infinite;
+}
+.chat-thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.chat-thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+
+/* ───── INPUT BAR · 胶囊（shell 负责 border，此处仅布局）───── */
+.claudio-input {
+  display: grid;
+  grid-template-columns: 1fr 24px 24px;
+  gap: var(--space-sm); align-items: center;
+}
+.claudio-input input {
+  background: transparent; border: 0;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--body-sm);
+  outline: none;
+  padding: var(--space-xs) 0;
+}
+.claudio-input input::placeholder {
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+.claudio-input__mic, .claudio-input__send {
+  width: 24px; height: 24px;
+  background: transparent; border: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: color .2s var(--ease-out);
+  font-size: 14px;
+}
+.claudio-input__mic:hover, .claudio-input__send:hover { color: var(--text-display); }
+
+/* ───── FOOTER ───── */
+.claudio-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: auto;
+  padding: var(--space-md) 0 0;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+}
+.claudio-footer__right { display: inline-flex; align-items: center; gap: var(--space-xs); }
+.claudio-footer .claudio-onair__dot {
+  background: var(--success);
+  width: 4px; height: 4px;
+}
+
+/* ───── PROFILE MODAL · no shadows ───── */
+.claudio-modal__backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+}
+.claudio-modal__card {
+  position: fixed; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  border-radius: 16px;
+  padding: var(--space-xl);
+  width: min(360px, 92vw);
+  text-align: left;
+  z-index: 101;
+  animation: fadeIn .25s var(--ease-out);
+}
+.claudio-modal__avatar {
+  width: 64px; height: 64px;
+  border-radius: 999px;
+  border: 1px solid var(--border-visible);
+  background: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-display);
+  font-family: var(--font-display); font-size: 28px;
+}
+.claudio-modal__card h2 {
+  margin: var(--space-md) 0 var(--space-xs);
+  font-family: var(--font-display);
+  font-size: var(--display-md);
+  font-weight: 400;
+  color: var(--text-display);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.claudio-modal__tagline {
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+.claudio-modal__bio {
+  margin: 0 0 var(--space-xl);
+  font-family: var(--font-body);
+  font-size: var(--body-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.claudio-modal__stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin: var(--space-lg) 0;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.claudio-modal__stats div { text-align: left; }
+.claudio-modal__stats dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin: 0;
+}
+.claudio-modal__stats dd {
+  font-family: var(--font-mono);
+  font-size: var(--display-md);
+  color: var(--text-display);
+  margin: var(--space-xs) 0 0;
+  letter-spacing: -0.02em;
+}
+
+.claudio-tags {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-wrap: wrap; gap: var(--space-xs);
+}
+.claudio-tags li {
+  padding: 4px var(--space-sm);
+  border: 1px solid var(--border-visible);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+/* ───── SPEAKING VIEW ───── */
+.claudio-speaking-bg {
+  min-height: 100dvh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: var(--space-lg);
+  background: var(--black);
+}
+.claudio-speaking-card {
+  width: 360px; max-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.claudio-speaking-card__head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+.claudio-speaking-card__brand { display: inline-flex; align-items: center; gap: var(--space-xs); }
+.claudio-avatar--xs { width: 22px; height: 22px; font-size: 10px; }
+.claudio-speaking-card__name {
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-display);
+}
+.claudio-speaking-card__time {
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  color: var(--text-secondary);
+}
+.claudio-speaking-card__status {
+  display: inline-flex; align-items: center; gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.claudio-speaking-card__status .claudio-onair__dot { width: 4px; height: 4px; }
+.claudio-speaking-card__wave {
+  width: 100%; height: 60px; display: block;
+  background: var(--black);
+}
+.claudio-speaking-card__white {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  padding: var(--space-lg) var(--space-md);
+  display: flex; flex-direction: column; gap: var(--space-md);
+}
+.claudio-speaking-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--display-md);
+  line-height: 1.05;
+  color: var(--text-display);
+  letter-spacing: -0.02em;
+}
+.claudio-speaking-card__sub {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+.claudio-speaking-card__bar {
+  display: grid; grid-template-columns: 24px 1fr auto;
+  gap: var(--space-sm); align-items: center;
+}
+.claudio-speaking-card__pause {
+  width: 24px; height: 24px; border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary); border: 1px solid var(--border-visible);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 10px;
+}
+.claudio-speaking-card__pause--dark {
+  background: var(--text-display); color: var(--black); border: 0;
+}
+.claudio-speaking-card__track {
+  height: 1px; background: var(--border-visible); position: relative;
+}
+.claudio-speaking-card__progress {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--text-display);
+}
+.claudio-speaking-card__total {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+.claudio-speaking-card__lines {
+  list-style: none; margin: var(--space-md) 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: var(--space-md);
+}
+.claudio-speaking-card__lines li { transition: opacity .3s var(--ease-out); }
+.claudio-speaking-card__lines .is-past    { opacity: 0.4; }
+.claudio-speaking-card__lines .is-current { opacity: 1; }
+.claudio-speaking-card__line-meta {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-disabled);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2xs);
+}
+.claudio-speaking-card__line-text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--body-sm);
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+.is-past .claudio-speaking-card__line-text { color: var(--text-secondary); }
+.claudio-speaking-card__line-text mark {
+  background: transparent;
+  color: var(--accent);
+  padding: 0;
+  font-weight: 500;
+}
+.claudio-speaking-card__foot {
+  display: grid; grid-template-columns: auto 1fr 32px;
+  gap: var(--space-sm); align-items: center;
+  padding: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+.claudio-speaking-card__foot-time {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-secondary);
+}
+.claudio-speaking-card__wave-mini {
+  width: 100%; height: 20px; display: block;
+}
+.claudio-speaking-back { margin-top: var(--space-lg); }
+
+/* ════════════════════════════════════════════════════════════════
+   通用卡片基类（A/B/C/D 复用）
+   ════════════════════════════════════════════════════════════════ */
+.claudio-card {
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  border-radius: 12px;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.claudio-card__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+.claudio-card__hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-disabled);
+}
+
+/* ───── B 天气卡 ───── */
+.claudio-weather__main {
+  display: flex; align-items: baseline; gap: var(--space-sm);
+}
+.claudio-weather__temp {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--text-display);
+  line-height: 1;
+}
+.claudio-weather__temp sup {
+  font-size: 16px; vertical-align: super;
+}
+.claudio-weather__text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-display);
+}
+.claudio-weather__sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+/* ───── C 每日一言卡 ───── */
+.claudio-daily__head {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.claudio-daily__refresh {
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--text-primary); font-size: 14px;
+  padding: 0 4px;
+  transition: color .2s var(--ease-out), transform .3s var(--ease-out);
+}
+.claudio-daily__refresh:hover { color: var(--text-display); transform: rotate(180deg); }
+.claudio-daily__text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ───── D 播放器大卡（NOW PLAYING 风格）───── */
+.claudio-player {
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  border-radius: 12px;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: 280px;  /* 给歌词滚筒留出空间 */
+}
+.claudio-player__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.claudio-player__head-sep,
+.claudio-player__head-dash {
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.claudio-player__head-artist {
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+}
+.claudio-player__head-name {
+  color: var(--text-display);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+/* D 卡主体：左侧歌词滚筒 + 右侧波形 */
+.claudio-player__body {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: var(--space-lg);
+  align-items: center;
+  min-height: 140px;
+}
+.claudio-player__lyric {
+  display: block;
+  min-width: 0;
+}
+.claudio-player__wave {
+  width: 240px;
+  height: 56px;
+  display: block;
+  flex-shrink: 0;
+  justify-self: end;
+}
+
+/* ───── 歌词滚筒 ───── */
+.lyric-scroll {
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+  padding-left: 40px;   /* 整体右移，避免贴卡片左边缘 */
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%);
+  mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%);
+}
+.lyric-scroll__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lyric-scroll__pad {
+  height: 28px;
+  flex-shrink: 0;
+}
+.lyric-scroll__line {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-disabled);
+  transition: color .4s var(--ease-out),
+              font-size .3s var(--ease-out),
+              font-weight .3s var(--ease-out),
+              opacity .4s var(--ease-out),
+              transform .3s var(--ease-out);
+  opacity: 0.5;
+  transform: scale(0.96);
+  transform-origin: left center;
+  padding: 2px 0;
+}
+.lyric-scroll__line.is-past {
+  color: var(--text-secondary);
+  opacity: 0.35;
+}
+.lyric-scroll__line.is-future {
+  color: var(--text-disabled);
+  opacity: 0.45;
+}
+
+/* 当前行容器：基础色 = 未唱部分（灰），整体放大 */
+.lyric-scroll__line.is-active {
+  font-size: 19px;
+  font-weight: 700;
+  opacity: 1;
+  transform: scale(1);
+  color: var(--text-disabled);
+}
+
+/* 字符级 span：默认继承父色（灰），is-sung 后变白 */
+/* 这样多行歌词的卡拉 OK 进度也能正确：每个字符独立着色，与水平位置无关 */
+.lyric-char {
+  color: inherit;
+  transition: color .15s var(--ease-out);
+}
+.lyric-scroll__line.is-active .lyric-char.is-sung {
+  color: var(--text-display);
+}
+
+/* 容器：保持 inline-block 让 text-decoration / line-height 正常 */
+.lyric-scroll__line-text {
+  display: inline;
+}
+
+.lyric-scroll__empty {
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.claudio-player__bar-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+}
+.claudio-player__time-current,
+.claudio-player__time-total {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+.claudio-player__time-total { text-align: right; }
+.claudio-player__progress {
+  appearance: none; -webkit-appearance: none;
+  width: 100%; height: 2px;
+  background: var(--border-visible);
+  cursor: pointer;
+  border-radius: 2px;
+}
+.claudio-player__progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px; height: 10px;
+  border-radius: 999px;
+  background: var(--accent-orange);
+  border: 0;
+}
+
+.claudio-player__ctrl-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-md);
+  align-items: center;
+}
+.claudio-player__controls {
+  display: flex; gap: var(--space-xs);
+}
+.claudio-player__controls button {
+  background: transparent; border: 0;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: var(--space-xs);
+  font-size: 16px;
+  line-height: 1;
+  transition: color .2s var(--ease-out);
+}
+.claudio-player__controls button:hover { color: var(--accent-orange); }
+.claudio-player__controls button.is-liked {
+  color: var(--accent-orange);
+  animation: like-pop .35s var(--ease-out);
+}
+@keyframes like-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.claudio-player__vol {
+  display: flex; align-items: center; gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+.claudio-player__vol input {
+  width: 50px; height: 1px;
+  appearance: none; -webkit-appearance: none;
+  background: var(--border-visible);
+  cursor: pointer;
+}
+.claudio-player__vol input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: var(--accent-orange);
+  border: 0;
+}
+.claudio-player__btn-text {
+  background: transparent; border: 1px solid var(--border-visible);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all .2s var(--ease-out);
+}
+.claudio-player__btn-text:hover {
+  color: var(--accent-orange); border-color: var(--accent-orange);
+}
+.claudio-player__btn-text.is-active {
+  color: var(--accent-orange);
+  border-color: var(--accent-orange);
+}
+.claudio-player__btn-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 5px;
+  background: var(--accent-orange);
+  color: var(--black);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* ───── D 卡内队列 popover ───── */
+.claudio-player {
+  position: relative;
+}
+.claudio-player__queue {
+  position: absolute;
+  right: var(--space-md);
+  bottom: calc(100% + 8px);
+  width: min(380px, calc(100% - var(--space-md) * 2));
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-visible);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 20;
+  animation: fadeIn .2s var(--ease-out);
+}
+/* 把 popover 锚到"列表"按钮上方而非整卡顶部：用 transform 微调 */
+.claudio-player .claudio-player__queue {
+  bottom: 64px;  /* 大致等于 ctrl-row 高度 + gap */
+}
+.claudio-player__queue-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  background: var(--surface-raised);
+}
+.claudio-player__queue-head button {
+  width: 24px; height: 24px;
+  background: transparent;
+  border: 0;
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 999px;
+}
+.claudio-player__queue-head button:hover { color: var(--text-display); }
+.claudio-player__queue-empty {
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-disabled);
+}
+.claudio-player__queue-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-xs) 0;
+}
+.claudio-player__queue-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: background .15s var(--ease-out);
+}
+.claudio-player__queue-item:hover { background: var(--surface); }
+.claudio-player__queue-item.is-current {
+  border-left: 2px solid var(--accent-orange);
+}
+.claudio-player__queue-item.is-current .claudio-player__queue-name {
+  color: var(--accent-orange);
+}
+.claudio-player__queue-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-disabled);
+}
+.claudio-player__queue-name {
+  font-family: var(--font-body);
+  font-size: var(--body-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.claudio-player__queue-artist {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PLAYER SHELL · 宽屏 Dashboard 布局（A → D → B/C）
+   ════════════════════════════════════════════════════════════════ */
+.player-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--black);
+  position: relative;  /* 让 drawer 绝对定位的把手有参考系 */
+}
+
+.player-header {
+  flex-shrink: 0;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+/* 主区：左栏 + 右抽屉，按 grid 列动态切换；
+   收起：[1fr 0]（把手浮于右边缘，hover 才显，不占布局宽度）
+   展开：[1fr 40vw]（聊天抽屉占屏 40%） */
+.player-grid {
+  flex: 1; min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 0;
+  gap: 0;
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  overflow: hidden;
+  position: relative;
+  transition: grid-template-columns .35s var(--ease-out), gap .35s var(--ease-out);
+}
+.player-grid:has(.player-drawer[data-open="true"]) {
+  grid-template-columns: 1fr 40vw;
+  gap: var(--space-md);
+}
+
+/* 左栏：A 时钟 / D 播放器 / B+C / 底栏 —— 4 行撑满 */
+.player-grid__left {
+  display: grid;
+  grid-template-rows: minmax(160px, 1.3fr) minmax(220px, auto) minmax(120px, 1fr) auto;
+  gap: var(--space-md);
+  height: 100%;
+  min-height: 0;
+}
+.player-grid__left .claudio-clock {
+  align-self: stretch;
+  justify-self: stretch;
+  height: 100%;
+}
+.player-grid__left .claudio-clock .claudio-clock__time {
+  font-size: clamp(64px, 9vw, 120px);
+}
+
+/* B + C 严格等宽等高 */
+.player-grid__row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  align-items: stretch;
+  min-height: 0;
+}
+/* custom element 本身作为 grid item → 强制撑满格子 */
+.player-grid__row-2col > claudio-weather-card,
+.player-grid__row-2col > claudio-daily-card {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+/* 内部的 .claudio-card 铺满 custom element */
+.player-grid__row-2col > claudio-weather-card > .claudio-card,
+.player-grid__row-2col > claudio-daily-card > .claudio-card {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.player-grid__left .claudio-player { min-height: 0; }
+
+/* ───── ON AIR BAR · 底部装饰性状态栏 ───── */
+.onair-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-md);
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  min-height: 40px;
+  overflow: hidden;
+}
+.onair-bar__left,
+.onair-bar__right {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  white-space: nowrap;
+}
+.onair-bar__right {
+  justify-content: flex-end;
+  min-width: 0;
+}
+.onair-bar__center {
+  min-width: 0;
+  overflow: hidden;
+}
+.onair-bar__dots {
+  display: block;
+  width: 100%;
+  height: 20px;
+}
+.onair-bar__dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.onair-bar__dot.is-on {
+  background: var(--accent-orange);
+  animation: breathe 2s var(--ease-out) infinite;
+  box-shadow: 0 0 8px rgba(255,107,26,0.5);
+}
+.onair-bar__dot.is-off {
+  background: var(--text-disabled);
+}
+.onair-bar__status {
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+.onair-bar__uptime,
+.onair-bar__msgs,
+.onair-bar__ver {
+  color: var(--text-secondary);
+}
+.onair-bar__song {
+  color: var(--text-secondary);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0.05em;
+}
+.onair-bar__sep {
+  color: var(--text-disabled);
+  opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+  .onair-bar {
+    grid-template-columns: 1fr;
+    gap: var(--space-xs);
+  }
+  .onair-bar__center { display: none; }
+  .onair-bar__left, .onair-bar__right { justify-content: space-between; }
+
+  /* D 卡：窄屏时歌词在上、波形在下，各占一行 */
+  .claudio-player__body {
+    grid-template-columns: 1fr;
+  }
+  .claudio-player__wave {
+    justify-self: stretch;
+    width: 100%;
+  }
+}
+
+/* ───── 右侧 E 区抽屉 ───── */
+.player-drawer {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+/* 收起态：抽屉自身宽 0、不可见 */
+.player-drawer[data-open="false"] {
+  border: 0;
+  background: transparent;
+}
+
+/* 把手：挂在 player-grid 上（非抽屉内，避免被 overflow:hidden 裁掉）
+   默认显示为细线提示（4px 宽橙色），鼠标 hover 右边缘 → 展开为完整胶囊 */
+.player-drawer__handle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 56px;
+  background: var(--accent-orange);
+  border: 0;
+  border-radius: 4px 0 0 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0.65;
+  z-index: 10;
+  transition: width .25s var(--ease-out),
+              height .25s var(--ease-out),
+              right .25s var(--ease-out),
+              padding .25s var(--ease-out),
+              opacity .25s var(--ease-out),
+              border-radius .25s var(--ease-out),
+              background .2s var(--ease-out),
+              color .2s var(--ease-out);
+}
+/* 细线状态下隐藏文字/箭头 */
+.player-drawer__handle-text,
+.player-drawer__handle-arrow {
+  opacity: 0;
+  transition: opacity .15s var(--ease-out);
+}
+
+/* hover 触发区：右边缘 60px 透明区域 */
+.player-grid__edge-trigger {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 5;
+  cursor: pointer;
+}
+/* 抽屉打开时，hover 区域不需要 */
+.player-grid:has(.player-drawer[data-open="true"]) .player-grid__edge-trigger {
+  display: none;
+}
+
+/* 鼠标进入右边缘 / hover 把手 → 展开为完整胶囊
+   注意：把手现在是 player-grid 直接子级，与 edge-trigger 是兄弟，与 player-drawer 也是兄弟 */
+.player-grid__edge-trigger:hover ~ .player-drawer__handle,
+.player-drawer__handle:hover,
+.player-drawer__handle:focus-visible {
+  width: 28px;
+  height: 88px;
+  right: 8px;
+  padding: 8px 0;
+  opacity: 1;
+  border-radius: 999px;
+  background: var(--surface-raised);
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+}
+.player-grid__edge-trigger:hover ~ .player-drawer__handle .player-drawer__handle-text,
+.player-grid__edge-trigger:hover ~ .player-drawer__handle .player-drawer__handle-arrow,
+.player-drawer__handle:hover .player-drawer__handle-text,
+.player-drawer__handle:hover .player-drawer__handle-arrow,
+.player-drawer__handle:focus-visible .player-drawer__handle-text,
+.player-drawer__handle:focus-visible .player-drawer__handle-arrow {
+  opacity: 1;
+  transition-delay: .1s;
+}
+
+/* 打开态：通过 :has 检测兄弟抽屉的状态来隐藏把手 */
+.player-grid:has(.player-drawer[data-open="true"]) .player-drawer__handle {
+  display: none;
+}
+
+.player-drawer__handle-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.player-drawer__handle-arrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* 抽屉内容（IM 三段式） */
+.player-drawer__body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  overflow: hidden;
+  position: relative;
+}
+/* 收起时不渲染 body（节省空间，且避免内容溢出影响布局） */
+.player-drawer[data-open="false"] .player-drawer__body {
+  display: none;
+}
+.player-drawer__body claudio-live-panel {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.player-drawer__body .claudio-live { flex: 1; min-height: 0; border: 0; border-radius: 0; padding: 0; }
+.player-drawer__body .claudio-input {
+  border: 1px solid var(--border-visible);
+  border-radius: 999px;
+  padding: var(--space-xs) var(--space-md);
+}
+
+/* 抽屉关闭按钮：右上角，常驻可见 */
+.player-drawer__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-visible);
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: color .2s var(--ease-out), border-color .2s var(--ease-out), background .2s var(--ease-out);
+}
+.player-drawer__close:hover {
+  color: var(--text-display);
+  border-color: var(--text-display);
+  background: var(--surface);
+}
+
+/* ───── Header icon-btn （☰ 菜单）───── */
+.claudio-icon-btn {
+  width: 32px; height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-visible);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color .2s var(--ease-out), border-color .2s var(--ease-out);
+  padding: 0;
+}
+.claudio-icon-btn:hover {
+  color: var(--text-display);
+  border-color: var(--text-display);
+}
+
+/* ───── MenuDrawer · 右侧统一菜单（资料 + 设置）───── */
+.menu-drawer__backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  animation: fadeIn .25s var(--ease-out);
+}
+.menu-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 420px; max-width: 92vw;
+  background: var(--surface);
+  border-left: 1px solid var(--border-visible);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  animation: drawerIn .3s var(--ease-out);
+}
+@keyframes drawerIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.menu-drawer__head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.menu-drawer__tabs {
+  display: flex;
+  gap: var(--space-md);
+}
+.menu-drawer__tab {
+  background: transparent; border: 0; cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.12em;
+  color: var(--text-disabled);
+  padding: var(--space-xs) 0;
+  text-transform: uppercase;
+  transition: color .2s var(--ease-out);
+  position: relative;
+}
+.menu-drawer__tab.is-active {
+  color: var(--text-display);
+}
+.menu-drawer__tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -8px;
+  height: 1px;
+  background: var(--accent-orange);
+}
+.menu-drawer__tab:hover { color: var(--text-primary); }
+
+.menu-drawer__close {
+  width: 28px; height: 28px;
+  background: transparent; border: 0;
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: color .2s var(--ease-out);
+}
+.menu-drawer__close:hover { color: var(--text-display); }
+
+.menu-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+}
+
+/* ───── Profile tab ───── */
+.menu-profile { display: flex; flex-direction: column; gap: var(--space-md); }
+.menu-profile__avatar {
+  width: 64px; height: 64px;
+  border-radius: 999px;
+  border: 1px solid var(--border-visible);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-display);
+  font-family: var(--font-display); font-size: 28px;
+}
+.menu-profile__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--display-md);
+  font-weight: 400;
+  color: var(--text-display);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.menu-profile__tagline {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+.menu-profile__bio {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--body-sm);
+  color: var(--text-primary);
+  line-height: 1.55;
+}
+.menu-profile__stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin: var(--space-md) 0;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.menu-profile__stats div { text-align: left; }
+.menu-profile__stats dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin: 0;
+}
+.menu-profile__stats dd {
+  font-family: var(--font-mono);
+  font-size: var(--display-md);
+  color: var(--text-display);
+  margin: var(--space-xs) 0 0;
+  letter-spacing: -0.02em;
+}
+.menu-profile__tags-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-top: var(--space-sm);
+}
+
+/* ───── Settings tab（复用 settings.js 旧样式）───── */
+.menu-settings { display: flex; flex-direction: column; gap: var(--space-md); }
+.menu-settings__foot {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+.menu-settings .s-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: var(--text-secondary); flex-shrink: 0; white-space: nowrap; }
+.menu-settings .s-val   { font-family: var(--font-mono); font-size: 12px; color: var(--text-display); letter-spacing: 0.05em; }
+.menu-settings .s-hint  { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; color: var(--text-disabled); padding-top: 4px; }
+.menu-settings .s-row   { display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--border); }
+.menu-settings .s-select {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-visible);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 24px 4px 8px;
+  min-width: 0;
+  max-width: 70%;
+  text-overflow: ellipsis;
+  /* 关掉 macOS / Windows 系统原生外观（避免 focus 后变蓝胶囊） */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  /* 自绘下拉箭头 */
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+                    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position: calc(100% - 12px) 50%, calc(100% - 7px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.menu-settings .s-select:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+}
+.menu-settings .s-select option {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+.menu-settings .s-slider { flex: 1; margin: 0 12px; height: 1px; background: var(--border-visible); appearance: none; -webkit-appearance: none; }
+.menu-settings .s-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: var(--accent-orange); border: 0; border-radius: 999px; }
+.menu-settings .s-btn-danger { background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 10px 16px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; cursor: pointer; }
+.menu-settings .s-btn-danger:hover { background: var(--accent); color: var(--black); }
+
+/* TTS 音色试听按钮 + 包裹容器 */
+.menu-settings .s-tts-voice-wrap { display: inline-flex; align-items: center; gap: 8px; max-width: 75%; min-width: 0; }
+.menu-settings .s-tts-voice-wrap .s-select { max-width: none; flex: 1; min-width: 0; }
+.menu-settings .s-btn-icon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent;
+  color: var(--accent-orange);
+  border: 1px solid var(--border-visible);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.menu-settings .s-btn-icon:hover:not(:disabled) { background: var(--accent-orange); color: var(--black); }
+.menu-settings .s-btn-icon:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* iOS 风开关 */
+.menu-settings .s-toggle { position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; }
+.menu-settings .s-toggle input { opacity: 0; width: 0; height: 0; }
+.menu-settings .s-toggle-track {
+  position: absolute; inset: 0;
+  background: var(--border-visible);
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+.menu-settings .s-toggle-knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.menu-settings .s-toggle input:checked + .s-toggle-track { background: var(--accent-orange); }
+.menu-settings .s-toggle input:checked + .s-toggle-track .s-toggle-knob { transform: translateX(16px); background: var(--black); }
+
+.menu-settings .s-section { display: flex; flex-direction: column; padding: var(--space-md); border: 1px solid var(--border); border-radius: 12px; background: var(--surface-raised); }
+.menu-settings .s-section-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: var(--space-sm); text-transform: uppercase; }
+
+/* 响应式：< 900px 退化为单列纵向流，drawer 改为底部全宽 */
+@media (max-width: 900px) {
+  .player-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr 32px;
+    padding: var(--space-md);
+    overflow-y: auto;
+  }
+  .player-grid:has(.player-drawer[data-open="true"]) {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr 70vh;
+  }
+  .player-grid__left {
+    grid-template-rows: auto auto auto;
+    height: auto;
+  }
+  .player-drawer__handle {
+    width: 100%; height: 32px;
+    flex-direction: row;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .player-drawer__handle-text {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+}
+

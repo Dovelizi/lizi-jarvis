@@ -1,0 +1,25 @@
+{
+  "name": "claudio-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Claudio 本地大脑：Express + WS + SQLite + Brain Adapter",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@andresaya/edge-tts": "^1.8.0",
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "node-cron": "^3.0.3",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "ws": "^8.18.0"
+  }
+}
