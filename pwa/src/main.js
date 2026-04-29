@@ -14,8 +14,14 @@ import './components/theme-toggle.js';
 import './components/menu-drawer.js';
 import './components/on-air-bar.js';
 import './components/lyric-scroll.js';
+import './components/light-curtain.js';
 
 setTheme(store.state.theme);
+
+// 霓虹光幕：单例，挂在 body 上，全局覆盖视口边缘
+if (!document.querySelector('claudio-light-curtain')) {
+  document.body.appendChild(document.createElement('claudio-light-curtain'));
+}
 
 const rootEl = document.getElementById('app');
 
