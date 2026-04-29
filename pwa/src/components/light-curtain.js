@@ -47,7 +47,8 @@ const FOG_RADIUS_RATIO = 0.42;
 // 半径的呼吸振幅：0.12 = 基础半径的 ±12%
 const FOG_RADIUS_BREATH = 0.12;
 // 雾光 alpha 的峰值（单团在"最亮"时达到）
-const FOG_ALPHA_PEAK = 0.28;
+// 由于外层 CSS blur(32px) 会进一步稀释亮度，这里再 +30% 补偿（0.38 → 0.494）
+const FOG_ALPHA_PEAK = 0.494;
 // 四团雾光的独立呼吸周期（秒）—— 互素，永不同步
 const FOG_PERIODS = [7.3, 5.9, 9.1, 6.7];
 // 位置沿边缘的漂移幅度（归一化到边长的比例）—— 让雾光中心左右慢移
@@ -65,9 +66,11 @@ const SPOT_CORE_RADIUS = 160;
 // 聚光灯外晕半径（px）—— 加大半径，让衰减距离更长 → 边缘无痕迹融入背景
 const SPOT_HALO_RADIUS = 340;
 // 聚光灯核心 alpha —— 降低峰值亮度，去掉"刺眼"的感觉
-const SPOT_CORE_ALPHA = 0.22;
+// GPU blur 32px 会进一步稀释，再 +30% 补偿（0.30 → 0.39）
+const SPOT_CORE_ALPHA = 0.39;
 // 聚光灯外晕 alpha —— 进一步压低，让外围只是淡淡的暖色雾
-const SPOT_HALO_ALPHA = 0.08;
+// +30% 补偿：0.12 → 0.156
+const SPOT_HALO_ALPHA = 0.156;
 // 高斯衰减的"陡峭度"—— k 越大中心越集中，k 越小过渡越平滑
 // k=3 意味着 r=0.58 处亮度降到 exp(-3*0.58²)≈0.36，边缘早已消散无形
 const SPOT_GAUSS_K = 3.2;
@@ -95,7 +98,14 @@ class ClaudioLightCurtain extends HTMLElement {
       height: '100vh',
       pointerEvents: 'none',
       zIndex: '90',
-      willChange: 'opacity',
+      willChange: 'opacity, filter',
+      // GPU 原生高斯模糊：让所有径向渐变的拼接点、硬边、采样阶梯彻底消失
+      // 浏览器会把整个 canvas 作为一个合成层做硬件加速模糊，质量远高于手写分段
+      // 32px 让模糊更大更梦幻，边缘彻底融入背景；配合 alpha +30% 补偿避免整体过暗
+      filter: 'blur(32px)',
+      // 让模糊稍微溢出视口边界，避免屏幕边缘出现模糊自身的"暗角"
+      transform: 'scale(1.04)',
+      transformOrigin: 'center center',
     });
     this._canvas.setAttribute('aria-hidden', 'true');
     document.body.appendChild(this._canvas);
